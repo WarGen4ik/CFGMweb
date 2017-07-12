@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -104,13 +105,13 @@ public class WebConnector extends HttpServlet {
                 }
         } else {
 
-            HashMap<Integer, String> queries = ResultsGetter.getResultQueries();
+            ArrayList<String> queries = ResultsGetter.getResultQueries();
             if (queries.size() > 0) {
-                for (Map.Entry<Integer, String> p : queries.entrySet()) {
-                    if (request.getParameter(Integer.toString(p.getKey())) != null) {
-                        processRequest(request, response, getShortName(country), p.getValue(), Integer.toString(p.getKey()));
-                    } else if (request.getParameter("Delete" + Integer.toString(p.getKey())) != null){
-                        new ResultsGetter(getServletContext().getRealPath("")).deleteRows(getShortName(country),p.getValue());
+                for (String p : queries) {
+                    if (request.getParameter(p) != null) {
+                        processRequest(request, response, getShortName(country), p);
+                    } else if (request.getParameter("Delete" + p) != null){
+                        new ResultsGetter(getServletContext().getRealPath("")).deleteRows(getShortName(country),p);
                         if (dispatcher != null) {
                             dispatcher.forward(request, response);
                         }
@@ -145,9 +146,9 @@ public class WebConnector extends HttpServlet {
     }
 
 
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response, String country, String query, String num)
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response, String country, String query)
             throws ServletException, IOException {
-        String fileName = new FileCreator(country, query, getServletContext().getRealPath(""), num).CreateFile();
+        String fileName = new FileCreator(country, query, getServletContext().getRealPath("")).CreateFile();
         String fileType = "text/csv";
         // Find this file id in database to get file name, and file type
 
@@ -156,7 +157,7 @@ public class WebConnector extends HttpServlet {
         response.setContentType(fileType);
 
         // Make sure to show the download dialog
-        response.setHeader("Content-disposition","attachment; filename=" + country + num + ".csv");
+        response.setHeader("Content-disposition","attachment; filename=" + country + query + ".csv");
 
         // Assume file name is retrieved from database
         // For example D:\\file\\test.pdf

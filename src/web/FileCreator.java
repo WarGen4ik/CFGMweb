@@ -10,7 +10,7 @@ public class FileCreator {
     private String query;
     private String path;
     private String num;
-    public FileCreator(String country, String query, String path, String num){
+    public FileCreator(String country, String query, String path){
         this.country = country;
         this.query = query;
         this.path = path;

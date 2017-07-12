@@ -13,34 +13,51 @@ import java.util.Properties;
  * Created by Admin on 10.07.2017.
  */
 public class ResultsGetter {
-    private static HashMap<Integer, String> resultQueries = new HashMap<Integer, String>();
+    private static ArrayList<String> resultQueries = new ArrayList<>();
 
-    public static HashMap<Integer, String> getResultQueries() {
+    public static ArrayList<String> getResultQueries() {
         return resultQueries;
     }
 
     public String getResults(String country) {
         StringBuilder result = new StringBuilder();
         Statement statement = null;
-        ArrayList<String> queries = new queryExcel(country, "START", path).getList();
         resultQueries.clear();
         try {
             getDBConnection();
             statement = connection.createStatement();
-            for (int i = 0; i < queries.size(); i++) {
-                String selectTableSQL = "SELECT * FROM `cfgm`.`result`" +
-                        " WHERE country = \"" + country + "\" AND query = \"" + queries.get(i) + "\"";
+            String selectTableSQL = "SELECT * FROM `cfgm`.`result`" +
+                    " WHERE country = \"" + country + "\"";
 
-                // выбираем данные с БД
-                ResultSet rs = statement.executeQuery(selectTableSQL);
-                rs.last();
-                //System.out.println(rs.getRow());
-                if (rs.getRow() > 1) {
-                    result.append("Country = ").append(country).append(", query = ").append(queries.get(i))
-                            .append(", count = ").append(rs.getRow())
-                            .append("<input type=\"submit\" value=\"Export\" name=\"").append(i).append("\">")
-                            .append("<input type=\"submit\" value=\"Delete\" name=\"Delete").append(i).append("\"> <br>");
-                    resultQueries.put(i, queries.get(i));
+            // выбираем данные с БД
+            ResultSet rs = statement.executeQuery(selectTableSQL);
+            //rs.last();
+            //System.out.println(rs.getRow());
+            String query = "";
+            int row = 0;
+            int prev_row = 0;
+            while (true) {
+                if(rs.next()) {
+                    if (!rs.getString("query").equals(query) && row != 0) {
+                        result.append("Country = ").append(country).append(", query = ").append(query)
+                                .append(", count = ").append(row - prev_row)
+                                .append("<input type=\"submit\" value=\"Export\" name=\"").append(query).append("\">")
+                                .append("<input type=\"submit\" value=\"Delete\" name=\"Delete").append(query).append("\"> <br>");
+                        resultQueries.add(query);
+                        prev_row = row;
+                    }
+                    query = rs.getString("query");
+                    row = rs.getRow();
+                }
+                else {
+                    if (row != 0){
+                            result.append("Country = ").append(country).append(", query = ").append(query)
+                                    .append(", count = ").append(row - prev_row)
+                                    .append("<input type=\"submit\" value=\"Export\" name=\"").append(query).append("\">")
+                                    .append("<input type=\"submit\" value=\"Delete\" name=\"Delete").append(query).append("\"> <br>");
+                            resultQueries.add(query);
+                    }
+                    break;
                 }
             }
 
