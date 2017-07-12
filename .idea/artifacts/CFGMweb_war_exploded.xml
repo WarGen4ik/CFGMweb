@@ -1,0 +1,18 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="CFGMweb:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/CFGMweb_war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="CFGMweb/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="CFGMweb" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="org.apache.poi:poi:3.16" />
+          <element id="library" level="project" name="com.google.code.gson:gson:2.8.1" />
+          <element id="library" level="project" name="org.ops4j.pax.jdbc:pax-jdbc-mysql:1.1.0" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

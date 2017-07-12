@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="cfgm@localhost">
+  <database-model serializer="dbm" rdbms="MYSQL" format-version="4.1">
+    <root id="1"/>
+    <schema id="2" parent="1" name="cfgm">
+      <Current>1</Current>
+      <Visible>1</Visible>
+    </schema>
+    <schema id="3" parent="1" name="courses"/>
+    <schema id="4" parent="1" name="information_schema"/>
+    <schema id="5" parent="1" name="mysql"/>
+    <schema id="6" parent="1" name="performance_schema"/>
+    <schema id="7" parent="1" name="querybd"/>
+    <schema id="8" parent="1" name="videofilms"/>
+    <table id="9" parent="2" name="result"/>
+    <column id="10" parent="9" name="id">
+      <Position>1</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
+    </column>
+    <column id="11" parent="9" name="name">
+      <Position>2</Position>
+      <DataType>varchar(511)|0</DataType>
+    </column>
+    <column id="12" parent="9" name="form_phone_number">
+      <Position>3</Position>
+      <DataType>varchar(63)|0</DataType>
+    </column>
+    <column id="13" parent="9" name="address">
+      <Position>4</Position>
+      <DataType>varchar(511)|0</DataType>
+    </column>
+    <column id="14" parent="9" name="phone_number">
+      <Position>5</Position>
+      <DataType>varchar(63)|0</DataType>
+    </column>
+    <column id="15" parent="9" name="website">
+      <Position>6</Position>
+      <DataType>varchar(511)|0</DataType>
+    </column>
+    <column id="16" parent="9" name="country">
+      <Position>7</Position>
+      <DataType>varchar(45)|0</DataType>
+    </column>
+    <column id="17" parent="9" name="query">
+      <Position>8</Position>
+      <DataType>varchar(511)|0</DataType>
+    </column>
+    <key id="18" parent="9" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+  </database-model>
+</dataSource>
