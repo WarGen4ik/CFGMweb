@@ -4,11 +4,13 @@ import application.View.MainClass;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +19,7 @@ import java.util.Properties;
 /**
  * Created by Admin on 30.06.2017.
  */
-@WebServlet("/")
+//@WebServlet("/")
 public class WebConnector extends HttpServlet {
 
     private MainClass gatherer = null;
@@ -70,6 +72,7 @@ public class WebConnector extends HttpServlet {
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=utf-8");
+        request.setCharacterEncoding("UTF-8");
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("main.jsp");
 
@@ -109,6 +112,7 @@ public class WebConnector extends HttpServlet {
             if (queries.size() > 0) {
                 for (String p : queries) {
                     if (request.getParameter(p) != null) {
+                        System.out.println(p);
                         processRequest(request, response, getShortName(country), p);
                     } else if (request.getParameter("Delete" + p) != null){
                         new ResultsGetter(getServletContext().getRealPath("")).deleteRows(getShortName(country),p);
@@ -149,23 +153,25 @@ public class WebConnector extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response, String country, String query)
             throws ServletException, IOException {
         String fileName = new FileCreator(country, query, getServletContext().getRealPath("")).CreateFile();
-        String fileType = "text/csv";
+        //fileName = URLEncoder.encode(fileName,"UTF-8");
+        String fileType = "application/octet-stream";
         // Find this file id in database to get file name, and file type
 
         // You must tell the browser the file type you are going to send
         // for example application/pdf, text/plain, text/html, image/jpg
         response.setContentType(fileType);
+        response.setCharacterEncoding("UTF-8");
 
         // Make sure to show the download dialog
-        response.setHeader("Content-disposition","attachment; filename=" + country + query + ".csv");
-
+        response.setHeader("Content-disposition","attachment; filename=" + country + query.hashCode() + ".txt");
+        String res = "";
         // Assume file name is retrieved from database
         // For example D:\\file\\test.pdf
 
         File my_file = new File(fileName);
 
         // This should send the file to browser
-        OutputStream out = response.getOutputStream();
+        ServletOutputStream out = response.getOutputStream();
         FileInputStream in = new FileInputStream(my_file);
         byte[] buffer = new byte[4096];
         int length;
@@ -174,5 +180,19 @@ public class WebConnector extends HttpServlet {
         }
         in.close();
         out.flush();
+        /*try {
+            BufferedReader reader = new BufferedReader(new FileReader(getServletContext().getRealPath("") + "results/" + country + query.hashCode() + ".csv"));
+            String str;
+            while ((str = reader.readLine()) != null){
+                res += str + '\n';
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        OutputStream stream =  response.getOutputStream();
+        PrintWriter out = new PrintWriter(stream);
+        out.flush();
+        stream.write(res.getBytes("windows-1251"));
+        stream.flush();*/
     }
 }

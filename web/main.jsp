@@ -15,10 +15,10 @@
   <head>
     <title>MyTitle</title>
     <meta charset="utf-8">
+    <script type="text/javascript" src="${pageContext.request.contextPath}/jquery-3.2.1.js"></script>
   </head>
   <body>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <form method="GET" action="/">
+    <form method="GET" action="/main">
       <select id="country" name="country">
         <option value="0">Выберите страну</option>
         <%
@@ -40,7 +40,7 @@
     </form>
 
     <div id="mydiv"> </div>
-    <form action="/" method="POST">
+    <form action="/main" method="POST">
         <div id="results"> </div>
     </form>
 
@@ -49,7 +49,7 @@
           var id = $(this).val(); //get the current value's option
           $.ajax({
               type:'POST',
-              url:'/',
+              url:'/main',
               data:{'country':id},
               success:function(response){
                   $('#querydiv').html(response + "<br><input id=\"query\" name=\"query\" placeholder=\"Query\">");
@@ -58,7 +58,7 @@
                       var id = $(this).val();
                       $.ajax({
                           type:'POST',
-                          url:'/',
+                          url:'/main',
                           data:{'query':id},
                           success:function(response){
                               if (response != "Select query")
@@ -74,7 +74,7 @@
           var id = $(this).val(); //get the current value's option
           $.ajax({
               type:'POST',
-              url:'/',
+              url:'/main',
               data:{'country':id, 'results': 1},
               success:function(response){
                   $('#results').html(response);
@@ -85,7 +85,7 @@
         function show()
         {
             $.ajax({
-                url: "/",
+                url: "/main",
                 type:'POST',
                 cache: false,
                 data: {'progress': 'true'},

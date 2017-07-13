@@ -5,6 +5,8 @@ import application.DataBase.queryExcel;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,8 +33,7 @@ public class ResultsGetter {
 
             // выбираем данные с БД
             ResultSet rs = statement.executeQuery(selectTableSQL);
-            //rs.last();
-            //System.out.println(rs.getRow());
+
             String query = "";
             int row = 0;
             int prev_row = 0;

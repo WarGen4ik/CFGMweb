@@ -152,7 +152,7 @@ public class MainClass {
     }
 
     public void startButtonPressed(String currCountry, String query, boolean isOnce, boolean isNew) {
-        isNewQuery(query, currCountry);
+        //isNewQuery(query, currCountry);
         if (currCountry != null) {
             setLast_country(currCountry);
             if (isNew) {

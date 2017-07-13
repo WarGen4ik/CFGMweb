@@ -31,7 +31,7 @@ public class DBObj {
             connection.setAutoCommit(false);
             pstatement = connection.prepareStatement(insertTableSQL);
             for (int i = startSave; i < endSave; i++) {
-                System.out.println(info.get(i));
+                //System.out.println(info.get(i));
                 String splitInfo[] = info.get(i).split(";");
 
 
