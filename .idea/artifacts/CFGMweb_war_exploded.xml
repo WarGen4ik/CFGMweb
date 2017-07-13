@@ -11,6 +11,7 @@
           <element id="library" level="project" name="org.apache.poi:poi:3.16" />
           <element id="library" level="project" name="com.google.code.gson:gson:2.8.1" />
           <element id="library" level="project" name="org.ops4j.pax.jdbc:pax-jdbc-mysql:1.1.0" />
+          <element id="library" level="project" name="log4j:apache-log4j-extras:1.2.17" />
         </element>
       </element>
     </root>

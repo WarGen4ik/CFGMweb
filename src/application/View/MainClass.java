@@ -6,6 +6,7 @@ import application.DataBase.queryExcel;
 import application.data.gather.companies.DataGatherer;
 import application.data.gather.companies.exceptions.QuotaLimitException;
 import javafx.util.Pair;
+import org.apache.log4j.Logger;
 import web.ResultsGetter;
 
 import java.io.*;
@@ -24,6 +25,8 @@ public class MainClass {
     private static final String COUNTRIES_COORDS = "countries_coords.csv";
     private static final String SHORT_COUNTRIES_NAMES = "ShortCountriesNames.txt";
     private static final String CONFIG_PROPERTIES = "config.properties";
+
+    private static Logger log = Logger.getLogger(MainClass.class);
 
     private ArrayList<String> allcompanies = new ArrayList<>();
     private String last_coord;
@@ -147,12 +150,13 @@ public class MainClass {
 
     public void deleteTableResButtonPressed() {
         if (!dbObj.deleteResTable()){
-            System.out.println("Cant delete db, check ur db connection and try again");
+            log.info("Cant delete db, check ur db connection and try again");
         }
     }
 
     public void startButtonPressed(String currCountry, String query, boolean isOnce, boolean isNew) {
         //isNewQuery(query, currCountry);
+        log.info("Start button pressed");
         if (currCountry != null) {
             setLast_country(currCountry);
             if (isNew) {
@@ -201,14 +205,14 @@ public class MainClass {
                                     gatherers.clear();
                                     countGatherers = 50;
                                     service = Executors.newCachedThreadPool();
-                                    //System.out.println("COUNT = " + countGatherers);
+                                    //log.info("COUNT = " + countGatherers);
                                     isAlive = new boolean[countGatherers];
 
                                     for (int i = 0; i < countGatherers; i++) {
                                         isAlive[i] = true;
                                         Gatherer gatherer = new Gatherer();
                                         gatherer.setList(getCountriesCoords(countryCoordsList));
-                                        //System.out.println("ID COUNTY - " + country);
+                                        //log.info("ID COUNTY - " + country);
                                         if (gatherer.getList().size() == 0) {
                                             isAlive[i] = false;
                                             continue;
@@ -218,14 +222,14 @@ public class MainClass {
                                         gatherer.setNumber(i);
                                         gatherer.setRadius(radius);
                                         gatherers.add(gatherer);
-                                        System.out.println(gatherer.getName() + " has started. #" + i);
+                                        log.info(gatherer.getName() + " has started. #" + i);
                                         service.submit(gatherer);
                                         Thread.sleep(500);
                                         if (isNotEnoughQuota() || DataGatherer.internetProblem) {
                                             break;
                                         }
                                     }
-                                    //System.out.println("COUNT GATHERERS = " + gatherers.size());
+                                    //log.info("COUNT GATHERERS = " + gatherers.size());
                                     while (isAnyAlive()) {
                                         Thread.sleep(5000);
                                         if (checkInternetConnection()) {
@@ -241,13 +245,13 @@ public class MainClass {
                                     isStack = false;
 
                                     endSave = allcompanies.size();
-                                    System.out.println(startSave + " " + endSave);
+                                    log.info(startSave + " " + endSave);
                                     DBThread dbThread = new DBThread();
                                     dbThread.setPoints(startSave, endSave);
                                     dbThread.start();
                                     startSave = endSave;
                                 } while (isNextCoord && !isNotEnoughQuota() && !DataGatherer.internetProblem);
-                                //System.out.println("number country   " + country);
+                                //log.info("number country   " + country);
                                 number_query++;
                                 isNextCoord = true;
 
@@ -273,7 +277,7 @@ public class MainClass {
                         }
 
                         saveProp(getLast_coord(), null, getLast_query());
-                        System.out.println(getLast_query());
+                        log.info(getLast_query());
                     } while (!getLast_query().equals("END") && !isNotEnoughQuota() && !DataGatherer.internetProblem);
 
                     if (isOnce)
@@ -290,16 +294,16 @@ public class MainClass {
 
 
                 if (isNotEnoughQuota()) {
-                    System.out.println("Not enough quota");
+                    log.info("Not enough quota");
                 } else if (DataGatherer.internetProblem && !isIsStopped()) {
-                    System.out.println("Intenet problems");
+                    log.info("Intenet problems");
                 } else if (isIsStopped()) {
-                    System.out.println("U have stopped app");
+                    log.info("U have stopped app");
                 }
 
                 service.shutdownNow();
 
-                System.out.println("FINISHED");
+                log.info("FINISHED");
                 saveProp(Long.toString(country + first_country_coord), null, null);
                 isFinished = true;
 
@@ -544,7 +548,7 @@ public class MainClass {
                         saveProp(getLast_coord(), null, null);
                     }
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    System.out.println("array index out of bounds exception");
+                    log.info("array index out of bounds exception");
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();

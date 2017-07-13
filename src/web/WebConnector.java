@@ -1,8 +1,10 @@
 package web;
 
 import application.View.MainClass;
+import org.apache.log4j.PropertyConfigurator;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
@@ -23,6 +25,18 @@ import java.util.Properties;
 public class WebConnector extends HttpServlet {
 
     private MainClass gatherer = null;
+
+    @Override
+    public void init() throws ServletException {
+        // initialize log4j here
+        ServletContext context = getServletContext();
+        String log4jConfigFile = context.getInitParameter("log4j-config-location");
+        String fullPath = context.getRealPath("") + File.separator + log4jConfigFile;
+
+        PropertyConfigurator.configure(fullPath);
+
+        super.init();
+    }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
