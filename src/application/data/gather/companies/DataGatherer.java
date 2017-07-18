@@ -4,19 +4,20 @@ import application.View.MainClass;
 import application.data.gather.Countries.CoordsGatherer;
 import application.data.gather.companies.exceptions.QuotaLimitException;
 import application.util.JsonUtil;
+import application.util.Pair;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import javafx.util.Pair;
 
+import org.apache.log4j.Logger;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Admin on 30.06.2017.
  */
 public class DataGatherer {
+    private static Logger log = Logger.getLogger(DataGatherer.class);
 
 
     private static final String API_KEY_PLACES = "AIzaSyDPNi-vNBgN-1IB6wMsOi25Zk3sE8C8aYk";//"AIzaSyCnxC5vVKTRzgLFJNa2bIauEvCyb4w8x0U";//
@@ -38,8 +39,8 @@ public class DataGatherer {
         placeidList.clear();
     }
 
-    public static Pair<Map<String, String>, QuotaLimitException> gather(String country, double lat, double lng, String tag, int radius) throws IOException {
-        Map<String, String> companies = new HashMap<>();
+    public static Pair<HashMap<String, String>, QuotaLimitException> gather(String country, double lat, double lng, String tag, int radius) throws IOException {
+        HashMap<String, String> companies = new HashMap<>();
         String status = "";
 
         String nearByUrl = GMAPI_URL_RADAR
@@ -53,7 +54,7 @@ public class DataGatherer {
         //System.out.println("radar req = " + nearByUrl);
         JsonObject companiesJson = JsonUtil.getJson(nearByUrl);
 
-        //logger.info("radar resp = " + companiesJson);
+        //log.info("radar resp = " + companiesJson);
 
         status = companiesJson.get("status").getAsString();
         if (status.equals(OVER_QUERY_LIMIT)) {
@@ -70,7 +71,7 @@ public class DataGatherer {
             ArrayList<String> coordsList = CoordsGatherer.gatherLocations(lat,lng,radius);
             for (int i = 0; i < coordsList.size(); i++){
                 String split[] = coordsList.get(i).split(";");
-                Pair<Map<String,String>, QuotaLimitException> p = gather(country, Double.parseDouble(split[0]), Double.parseDouble(split[1]), tag, (int)(radius/3.5));
+                Pair<HashMap<String,String>, QuotaLimitException> p = gather(country, Double.parseDouble(split[0]), Double.parseDouble(split[1]), tag, (int)(radius/3.5));
                 if (p.getValue() == null){
                     companies.putAll(p.getKey());
                 }
@@ -114,8 +115,8 @@ public class DataGatherer {
                         if (types.get(k).getAsString().equals("country")){
                             if (address_obj.get("short_name").getAsString().equals(country))
                                 isThisCountry = true;
-                            //logger.info("details req = " + detailsUrl);
-                            //logger.info("details resp = " + json);
+                            //log.info("details req = " + detailsUrl);
+                            //log.info("details resp = " + json);
                         }
                     }
                 }
@@ -146,9 +147,9 @@ public class DataGatherer {
                 String fCompany = name + ";" + company_address + ";" + tel_number + ";" + form_tel_number;
 
                 companies.put(fCompany, website);
-                System.out.println(name + "     " + website);
+                //log.info(name + "     " + website);
         }
-
+        log.info(companies.size());
         return new Pair<>(companies, null);
     }
 

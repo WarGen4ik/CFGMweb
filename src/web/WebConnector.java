@@ -106,7 +106,7 @@ public class WebConnector extends HttpServlet {
             if (gatherer != null)
                 if (!gatherer.isFinished()) {
                     long coord = (Long.parseLong(gatherer.getLast_coord()) - gatherer.getFirstCoord());
-                    response.getWriter().write((coord < 0 ? 0 : coord) + "/" + (gatherer.getMaxCoord() - gatherer.getFirstCoord()));
+                    response.getWriter().write((coord > 0 ? coord : 0) + "/" + (gatherer.getMaxCoord() - gatherer.getFirstCoord()));
                 } else if (gatherer.isDBWorking()) {
                     response.getWriter().write("Data is saving to db...");
                 } else if (gatherer.isNotEnoughQuota()) {

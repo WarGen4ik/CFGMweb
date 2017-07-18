@@ -5,14 +5,14 @@ import application.DataBase.DBObj.DBObj;
 import application.DataBase.queryExcel;
 import application.data.gather.companies.DataGatherer;
 import application.data.gather.companies.exceptions.QuotaLimitException;
-import javafx.util.Pair;
+import application.util.Pair;
 import org.apache.log4j.Logger;
-import web.ResultsGetter;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -59,9 +59,11 @@ public class MainClass {
             setLast_coord(countryProp.getProperty("last_coord"));
             setLast_country(countryProp.getProperty("last_country"));
             setLast_query(countryProp.getProperty("last_query"));
+            log.info("PROPERTIES GOT");
             if (!getLast_query().equals("START"))
                 DataGatherer.getIDs();
         } catch (IOException e) {
+            log.error("CANT OPEN PROPERTIES FILE");
             e.printStackTrace();
         } finally {
             if (is != null) {
@@ -256,7 +258,7 @@ public class MainClass {
                                 isNextCoord = true;
 
                             } catch (InterruptedException e) {
-                                e.printStackTrace();
+                                log.error("Interrupt", e);
                             }
                         });
 
@@ -265,7 +267,7 @@ public class MainClass {
                             try {
                                 thread.join();
                             } catch (InterruptedException e) {
-                                e.printStackTrace();
+                                log.error("Interrupt", e);
                             }
                         }
                         DataGatherer.toFileId(true, false);
@@ -479,6 +481,7 @@ public class MainClass {
             countryProp.store(os, null);
             os.close();
         } catch (IOException e) {
+            log.error("failed save to properties", e);
             e.printStackTrace();
         } finally {
             if (is != null) {
@@ -526,7 +529,7 @@ public class MainClass {
                     break;
                 }
                 try {
-                    Pair<Map<String, String>, QuotaLimitException> gather =
+                    Pair<HashMap<String, String>, QuotaLimitException> gather =
                             dataGatherer.gather(list.get(i).getCountry(),
                                     Double.parseDouble(list.get(i).getLat()),
                                     Double.parseDouble(list.get(i).getLng()),
@@ -547,11 +550,10 @@ public class MainClass {
                         setLast_coord(Long.toString(list.get(i).getID()));
                         saveProp(getLast_coord(), null, null);
                     }
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    log.info("array index out of bounds exception");
-                    e.printStackTrace();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error("DATAGATHERER ERROR", e);
+                } catch (Exception e){
+                    log.error("unknown datagatherer exception", e);
                 }
             }
             isAlive[number] = false;

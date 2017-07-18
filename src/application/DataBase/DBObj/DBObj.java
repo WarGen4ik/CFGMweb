@@ -2,6 +2,7 @@ package application.DataBase.DBObj;
 
 
 import application.Company;
+import org.apache.log4j.Logger;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.Properties;
  * Created by Admin on 04.07.2017.
  */
 public class DBObj {
+    private static Logger log = Logger.getLogger(DBObj.class);
 
     private boolean isWorking = false;
     public synchronized void addRes(ArrayList<String> info, int startSave, int endSave) {
@@ -24,14 +26,14 @@ public class DBObj {
 
         if (!getDBConnection()){
             isWorking = false;
-            System.out.println("Cant get db connection!");
+            log.info("Cant get db connection!");
             return;
         }
         try {
             connection.setAutoCommit(false);
             pstatement = connection.prepareStatement(insertTableSQL);
             for (int i = startSave; i < endSave; i++) {
-                //System.out.println(info.get(i));
+                //log.info(info.get(i));
                 String splitInfo[] = info.get(i).split(";");
 
 
@@ -95,7 +97,7 @@ public class DBObj {
             statement.executeUpdate(querySQL);
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Не удалось добавить поле");
+            log.info("Не удалось добавить поле");
             return false;
         }
 
@@ -151,6 +153,7 @@ public class DBObj {
         }
         catch(ClassNotFoundException e){
             e.printStackTrace();
+            log.error("cant find jdbc");
             return false;
         }
         return true;
@@ -161,6 +164,8 @@ public class DBObj {
             connection = DriverManager.getConnection(URL,USERNAME,PASSWORD);
         }
         catch (SQLException e){
+            log.error("failed get connection");
+            log.error(USERNAME + " " + PASSWORD + " " + URL);
             e.printStackTrace();
             return false;
         }
