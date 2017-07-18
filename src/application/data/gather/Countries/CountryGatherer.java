@@ -1,9 +1,10 @@
 package application.data.gather.Countries;
 
 import application.util.JsonUtil;
+import application.util.Pair;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import javafx.util.Pair;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
